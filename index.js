@@ -5,5 +5,5 @@ const mongoose = require("mongoose");
 const {database} = require("./database/schema");
 
 app.listen(Port, ()=>{
-    console.log("Server is running on port 3000"+ Port);
-})
+    console.log("Server is running on port "+ Port);
+});
