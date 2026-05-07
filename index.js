@@ -4,6 +4,8 @@ const Port = 3000;
 const mongoose = require("mongoose");
 const {database} = require("./database/schema");
 
+app.use(express.json());
+
 async function connectToDatabase(){
     try{
         await mongoose.connect("mongodb+srv://parthkotwe73:Parth02@cluster0.aj7snor.mongodb.net/CoursesSelling");
