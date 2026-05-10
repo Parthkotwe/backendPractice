@@ -1,5 +1,5 @@
-jwtUserSecret="user100xdev";
-jwtAdminSecret="admin100xdev";
+jwtUserSecret=process.env.jwtUserSecret;
+jwtAdminSecret=process.env.jwtAdminSecret;
 
 module.exports={
     jwtUserSecret,
