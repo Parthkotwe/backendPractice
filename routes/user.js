@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 // const jwtSecret = "100xdevs";
 const {jwtUserSecret} = require("../config");
+const {userMiddleware} = require("../middleware/user");
 
 const userRouter = Router();
 
@@ -66,12 +67,12 @@ userRouter.post("/login",async (req,res)=>{
     }
 })
 
-userRouter.get("/logout",(req,res)=>{
+userRouter.get("/logout",userMiddleware,(req,res)=>{
     res.clearCookie("userToken");
     return res.status(200).json({message: "Logout sucessfull"});
 })
 
-userRouter.get("/userPruchasedCourses",async (req,res)=>{
+userRouter.get("/userPruchasedCourses",userMiddleware,async (req,res)=>{
     try {
 
         // Get logged in user id from middleware

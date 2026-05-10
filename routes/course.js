@@ -1,6 +1,7 @@
 const Router = require('express');
 const courseRouter = Router();
 const {courseModel, purchaseModel} = require("../database/schema");
+const {userMiddleware} = require("../middleware/user");
 
 courseRouter.get("/AllCourses", async (req,res)=>{
     try {
@@ -12,7 +13,7 @@ courseRouter.get("/AllCourses", async (req,res)=>{
     }
 })
 
-courseRouter.post("/purchasedCourses",async (req,res)=>{
+courseRouter.post("/purchasedCourses",userMiddleware,async (req,res)=>{
     try {
         const userId = req.userId;
         const courseId = req.body.courseId;

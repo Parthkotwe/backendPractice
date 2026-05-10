@@ -3,6 +3,7 @@ const {creatorModel, purchaseModel,courseModel} = require("../database/schema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const {jwtAdminSecret} = require("../config");
+const {adminMiddleware} = require("../middleware/admin");
 
 const adminRouter = Router();
 
@@ -29,7 +30,6 @@ adminRouter.post("/signup",async (req,res)=>{
         return res.status(500).json({message: "Internal server error"});
     }
 })
-
 
 adminRouter.post("/login",async (req,res)=>{
     try{
@@ -66,12 +66,12 @@ adminRouter.post("/login",async (req,res)=>{
     }
 })
 
-adminRouter.get("/logout",(req,res)=>{
+adminRouter.get("/logout",adminMiddleware,(req,res)=>{
     res.clearCookie("adminToken");
     return res.status(200).json({message: "Logout sucessfull"});
 })
 
-adminRouter.post("/AddCourse",async (req,res)=>{
+adminRouter.post("/AddCourse",adminMiddleware,async (req,res)=>{
     try{
         const adminId = req.adminId;
         const {title,description,price,imgUrl} = req.body;
@@ -99,7 +99,7 @@ adminRouter.post("/AddCourse",async (req,res)=>{
     }
 })
 
-adminRouter.put("/updateCourse/:courseId", async (req,res)=>{
+adminRouter.put("/updateCourse/:courseId", adminMiddleware, async (req,res)=>{
     try{
         const adminId = req.adminId;
         const {courseId} = req.params;
@@ -127,7 +127,7 @@ adminRouter.put("/updateCourse/:courseId", async (req,res)=>{
     }
 })
 
-adminRouter.get("/allCourses",async (req,res)=>{
+adminRouter.get("/allCourses",adminMiddleware,async (req,res)=>{
     try {
         const adminId = req.adminId;
         const AllCourses = await courseModel.find({adminId:adminId});
