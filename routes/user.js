@@ -31,7 +31,6 @@ userRouter.post("/signup",async (req,res)=>{
     }
 })
 
-
 userRouter.post("/login",async (req,res)=>{
     try{
         const {email,password} = req.body;

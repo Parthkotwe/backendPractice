@@ -4,11 +4,14 @@ const Port = 3000;
 const mongoose = require("mongoose");
 const {database} = require("./database/schema");
 const {userRouter} = require("./routes/user");
+const { adminRouter } = require("./routes/admin");
 const cookieParser = require('cookie-parser');
+
 app.use(cookieParser());
 app.use(express.json());
 
 app.use('/user/',userRouter);
+app.use('/admin/',adminRouter);
 
 async function connectToDatabase(){
     try{

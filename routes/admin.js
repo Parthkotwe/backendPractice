@@ -104,8 +104,40 @@ adminRouter.put("/updateCourse/:courseId", async (req,res)=>{
         const adminId = req.adminId;
         const {courseId} = req.params;
         const {title,description,price,imgUrl} = req.body;
+
+        const Course = await courseModel.findById(courseId);
+        if(!Course){
+            return res.status(404).json({message: "Course not found"});
+        }
+        if(Course.adminId.toString() !== adminId){
+            return res.status(403).json({message:"Unauthorized to update this course"});
+        }
+
+        const updatedCourse = await courseModel.findByIdAndUpdate({__id:courseId, adminId:adminId},{
+            title:title,
+            description:description,
+            price:price,
+            imgUrl:imgUrl
+        })
+        res.status(200).json({message:"Course updated successfully"});
     }
     catch(error){
-
+        console.error("Error updating course: ", error);
+        return res.status(500).json({message: "Internal server error"});
     }
 })
+
+adminRouter.get("/allCourses",async (req,res)=>{
+    try {
+        const adminId = req.adminId;
+        const AllCourses = await courseModel.find({adminId:adminId});
+        return res.status(200).json({AllCourses:AllCourses});
+    } catch (error) {
+        console.error("Error fetching all courses: ", error);
+        return res.status(500).json({message: "Internal server error"});
+    }
+})
+
+module.exports = {
+    adminRouter: adminRouter
+}
