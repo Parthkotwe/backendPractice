@@ -1,8 +1,9 @@
 const {Router} = require('express');
-const {userModel, purchaseModel} = require("../database/schema");
+const {userModel, purchaseModel,courseModel} = require("../database/schema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const jwtSecret = "100xdevs";
+// const jwtSecret = "100xdevs";
+const {jwtUserSecret} = require("../config");
 
 const userRouter = Router();
 
@@ -44,7 +45,7 @@ userRouter.post("/login",async (req,res)=>{
             return res.status(400).json({message: "Invalid email"});
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, findUser.password);
         console.log(isPasswordValid);
 
         if(!isPasswordValid){
@@ -52,7 +53,7 @@ userRouter.post("/login",async (req,res)=>{
         }
 
         if(findUser && isPasswordValid){
-            const token = jwt.sign({ userId: findUser._id,},jwtSecret);
+            const token = jwt.sign({ userId: findUser._id,},jwtUserSecret);
             res.cookie("userToken", token,{
                 httpOnly: true,
                 secure:false, //// set true only when using https
