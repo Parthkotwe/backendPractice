@@ -21,7 +21,7 @@ userRouter.post("/signup",async (req,res)=>{
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await userModel.create({
-            email,hashedPassword,firstName,lastName
+            email,password:hashedPassword,firstName,lastName
         })
         return res.status(201).json({message: "User created successfully"});
     } catch (error) {
@@ -44,7 +44,7 @@ userRouter.post("/login",async (req,res)=>{
             return res.status(400).json({message: "Invalid email"});
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, findUser.password);
         console.log(isPasswordValid);
 
         if(!isPasswordValid){
