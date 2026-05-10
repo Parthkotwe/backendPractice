@@ -1,8 +1,10 @@
 const {Router} = require('express');
-const {userModel, purchaseModel} = require("../database/schema");
+const {userModel, purchaseModel,courseModel} = require("../database/schema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const jwtSecret = "100xdevs";
+// const jwtSecret = "100xdevs";
+const {jwtUserSecret} = require("../config");
+const {userMiddleware} = require("../middleware/user");
 
 const userRouter = Router();
 
@@ -21,7 +23,7 @@ userRouter.post("/signup",async (req,res)=>{
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await userModel.create({
-            email,hashedPassword,firstName,lastName
+            email,password:hashedPassword,firstName,lastName
         })
         return res.status(201).json({message: "User created successfully"});
     } catch (error) {
@@ -29,7 +31,6 @@ userRouter.post("/signup",async (req,res)=>{
         return res.status(500).json({message: "Internal server error"});
     }
 })
-
 
 userRouter.post("/login",async (req,res)=>{
     try{
@@ -44,7 +45,7 @@ userRouter.post("/login",async (req,res)=>{
             return res.status(400).json({message: "Invalid email"});
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, findUser.password);
         console.log(isPasswordValid);
 
         if(!isPasswordValid){
@@ -52,7 +53,7 @@ userRouter.post("/login",async (req,res)=>{
         }
 
         if(findUser && isPasswordValid){
-            const token = jwt.sign({ userId: findUser._id,},jwtSecret);
+            const token = jwt.sign({ userId: findUser._id,},jwtUserSecret);
             res.cookie("userToken", token,{
                 httpOnly: true,
                 secure:false, //// set true only when using https
@@ -66,12 +67,12 @@ userRouter.post("/login",async (req,res)=>{
     }
 })
 
-userRouter.get("/logout",(req,res)=>{
+userRouter.get("/logout",userMiddleware,(req,res)=>{
     res.clearCookie("userToken");
     return res.status(200).json({message: "Logout sucessfull"});
 })
 
-userRouter.get("/userPruchasedCourses",async (req,res)=>{
+userRouter.get("/userPruchasedCourses",userMiddleware,async (req,res)=>{
     try {
 
         // Get logged in user id from middleware
