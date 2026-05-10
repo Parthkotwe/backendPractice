@@ -1,6 +1,5 @@
 const {Router} = require('express');
 const {userModel, purchaseModel,courseModel} = require("../database/schema");
-const {userModel, purchaseModel,courseModel} = require("../database/schema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 // const jwtSecret = "100xdevs";
@@ -54,7 +53,6 @@ userRouter.post("/login",async (req,res)=>{
         }
 
         if(findUser && isPasswordValid){
-            const token = jwt.sign({ userId: findUser._id,},jwtUserSecret);
             const token = jwt.sign({ userId: findUser._id,},jwtUserSecret);
             res.cookie("userToken", token,{
                 httpOnly: true,
